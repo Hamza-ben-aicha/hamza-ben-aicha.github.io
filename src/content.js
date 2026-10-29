@@ -49,8 +49,8 @@ export const ui = {
       fr: "Ingénieur backend et mobile. Je développe des API en production avec Node.js, NestJS et Spring Boot, et les applications Flutter qui les utilisent.",
     },
     sub: {
-      en: "Freelance since 2025 for clients in loyalty, logistics and ship cargo inspection. Based in Sousse, Tunisia, and open to remote roles.",
-      fr: "Freelance depuis 2025 pour des clients dans la fidélité, la logistique et l'inspection de cargaisons. Basé à Sousse, en Tunisie, et ouvert aux postes en télétravail.",
+      en: "Freelance since 2025 for clients in loyalty, logistics and ship cargo inspection. Based in Tunisia and open to remote roles.",
+      fr: "Freelance depuis 2025 pour des clients dans la fidélité, la logistique et l'inspection de cargaisons. Basé en Tunisie et ouvert aux postes en télétravail.",
     },
     ctaWork: { en: "View projects", fr: "Voir les projets" },
   },
@@ -97,9 +97,10 @@ export const ui = {
   },
   about: {
     title: { en: "About me", fr: "À propos" },
+    plate: { en: "Backend & mobile engineer", fr: "Ingénieur backend et mobile" },
     p1: {
-      en: "I'm a software engineer from Sousse, Tunisia. I graduated with an engineering degree in computer science in 2025 and have worked freelance ever since.",
-      fr: "Je suis ingénieur logiciel, basé à Sousse en Tunisie. J'ai obtenu mon diplôme d'ingénieur en informatique en 2025 et je travaille en freelance depuis.",
+      en: "I'm a software engineer from Tunisia. I graduated with an engineering degree in computer science in 2025 and have worked freelance ever since.",
+      fr: "Je suis ingénieur logiciel, basé en Tunisie. J'ai obtenu mon diplôme d'ingénieur en informatique en 2025 et je travaille en freelance depuis.",
     },
     p2: {
       en: "Most of my work is the part of a product people never see: APIs, payments, notifications, background jobs and data that has to stay correct. When a client needs the mobile app too, I build it in Flutter, so I know both sides of every endpoint.",
@@ -154,7 +155,7 @@ export const education = [
       en: "Engineering degree in Computer Science",
       fr: "Diplôme national d'ingénieur en informatique",
     },
-    school: "EPI Digital School, Sousse",
+    school: "EPI Digital School",
     years: "2023 – 2025",
   },
   {
@@ -675,7 +676,7 @@ export const apiResponses = {
   "/me": {
     name: "Hamza Ben Aicha",
     role: "Backend & mobile engineer",
-    location: "Sousse, Tunisia",
+    location: "Tunisia",
     timezone: "UTC+1",
     open_to: ["remote, full-time", "freelance"],
     freelance_since: 2025,

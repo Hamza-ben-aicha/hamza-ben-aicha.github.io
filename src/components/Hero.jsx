@@ -40,7 +40,6 @@ export default function Hero() {
 
   return (
     <section className="hero" id="top">
-      <div className="hero__grid-bg" aria-hidden />
       <div className="container hero__inner">
         <div className="hero__copy">
           <m.p className="hero__status" {...rise(0.05)}>

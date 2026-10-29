@@ -1,38 +1,19 @@
-import { m, useReducedMotion } from "motion/react";
 import { usePrefs } from "../lib/prefs.jsx";
 import { education, site, skills, ui } from "../content.js";
 import { Heading, Reveal } from "./Reveal.jsx";
 import { IconExternal } from "./Icons.jsx";
-
-const ease = [0.22, 1, 0.36, 1];
+import Portrait3D from "./Portrait3D.jsx";
 
 export default function About() {
   const { t } = usePrefs();
-  const reduce = useReducedMotion();
 
   return (
     <section className="section" id="about" aria-labelledby="about-title">
       <div className="container">
         <div className="about">
-          <m.figure
-            className="about__photo"
-            initial={reduce ? false : { clipPath: "inset(100% 0 0 0 round 20px)" }}
-            whileInView={{ clipPath: "inset(0% 0 0 0 round 20px)" }}
-            viewport={{ once: true, margin: "0px 0px -15% 0px" }}
-            transition={{ duration: 1.1, ease }}
-          >
-            <m.img
-              src="me.webp"
-              alt="Portrait of Hamza Ben Aicha"
-              width="900"
-              height="1200"
-              loading="lazy"
-              initial={reduce ? false : { scale: 1.15 }}
-              whileInView={{ scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.6, ease }}
-            />
-          </m.figure>
+          <Reveal className="about__portrait" y={40}>
+            <Portrait3D role={t(ui.about.plate)} />
+          </Reveal>
 
           <div className="about__text">
             <Heading id="about-title">{t(ui.about.title)}</Heading>

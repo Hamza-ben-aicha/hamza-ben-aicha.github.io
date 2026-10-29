@@ -18,6 +18,8 @@
   --accent-soft: rgba(245, 184, 61, 0.1);
   --ok: #4bd69a;
   --grid-dot: rgba(232, 236, 243, 0.1);
+  --bg-dot: rgba(232, 236, 243, 0.075);
+  --bg-glow: rgba(245, 184, 61, 0.08);
   --overlay: rgba(5, 9, 18, 0.72);
   --shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.6);
 
@@ -54,6 +56,8 @@
   --accent-soft: rgba(245, 184, 61, 0.16);
   --ok: #139c63;
   --grid-dot: rgba(15, 24, 48, 0.13);
+  --bg-dot: rgba(15, 24, 48, 0.1);
+  --bg-glow: rgba(245, 184, 61, 0.14);
   --overlay: rgba(15, 24, 48, 0.45);
   --shadow: 0 30px 80px -40px rgba(15, 24, 48, 0.35);
   color-scheme: light;
@@ -427,15 +431,6 @@ section[id] {
   padding: clamp(36px, 7vh, 88px) 0 clamp(72px, 11vh, 128px);
   overflow: hidden;
 }
-.hero__grid-bg {
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(circle at 1px 1px, var(--grid-dot) 1px, transparent 0);
-  background-size: 28px 28px;
-  -webkit-mask-image: radial-gradient(ellipse 60% 70% at 78% 45%, #000 15%, transparent 72%);
-  mask-image: radial-gradient(ellipse 60% 70% at 78% 45%, #000 15%, transparent 72%);
-  pointer-events: none;
-}
 .hero__inner {
   position: relative;
   display: grid;
@@ -519,11 +514,7 @@ section[id] {
   .hero__inner {
     grid-template-columns: 1fr;
   }
-  .hero__grid-bg {
-    -webkit-mask-image: radial-gradient(ellipse 90% 50% at 50% 75%, #000 10%, transparent 70%);
-    mask-image: radial-gradient(ellipse 90% 50% at 50% 75%, #000 10%, transparent 70%);
   }
-}
 
 /* ───────────────── API console ───────────────── */
 .console {
@@ -1387,19 +1378,12 @@ section[id] {
   gap: clamp(36px, 6vw, 92px);
   align-items: start;
 }
-.about__photo {
+.about__portrait {
   position: sticky;
-  top: 96px;
-  margin: 0;
-  aspect-ratio: 3 / 4;
-  overflow: hidden;
-  border-radius: 20px;
-  background: #000;
-}
-.about__photo img {
+  top: 110px;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  max-width: 380px;
+  justify-self: center;
 }
 .about__text .heading {
   margin-bottom: 30px;
@@ -1496,10 +1480,12 @@ section[id] {
   .about {
     grid-template-columns: 1fr;
   }
-  .about__photo {
+  .about__portrait {
     position: relative;
     top: 0;
-    max-width: 420px;
+    max-width: 340px;
+    justify-self: start;
+    margin-top: 40px;
   }
   .skills__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1626,4 +1612,143 @@ section[id] {
   border-radius: 50%;
   background: var(--ok);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 22%, transparent);
+}
+
+/* ───────────────── Hover background ───────────────── */
+.hover-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* ───────────────── 3D portrait ───────────────── */
+.p3d {
+  perspective: 1100px;
+  padding: 26% 7% 6%;
+  cursor: default;
+  animation: p3d-float 7s ease-in-out infinite;
+}
+@keyframes p3d-float {
+  50% {
+    transform: translateY(-10px);
+  }
+}
+.p3d__card {
+  position: relative;
+  aspect-ratio: 4 / 4.4;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.p3d__back {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 26px;
+  border: 1px solid var(--line-strong);
+  background:
+    radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 60%),
+    var(--bg-raised);
+  box-shadow: 0 50px 90px -40px rgba(0, 0, 0, 0.6);
+  transform: translateZ(0);
+}
+.p3d__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 32px 32px;
+  -webkit-mask-image: radial-gradient(80% 70% at 50% 40%, #000, transparent 75%);
+  mask-image: radial-gradient(80% 70% at 50% 40%, #000, transparent 75%);
+  opacity: 0.7;
+}
+.p3d__halo {
+  position: absolute;
+  left: 50%;
+  top: 2%;
+  width: 78%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 30%, transparent), transparent 70%);
+  transform: translateX(-50%) translateZ(30px);
+}
+.p3d__person {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 106%;
+  max-width: none;
+  height: auto;
+  border-radius: 0 0 26px 26px;
+  transform: translateX(-50%) translateZ(70px);
+  filter: drop-shadow(0 26px 30px rgba(0, 0, 0, 0.45));
+  pointer-events: none;
+}
+.p3d__plate {
+  position: absolute;
+  left: 7%;
+  right: 7%;
+  bottom: -7%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(10, 17, 32, 0.72);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  color: #e8ecf3;
+  transform: translateZ(110px);
+  box-shadow: 0 20px 40px -18px rgba(0, 0, 0, 0.6);
+}
+.p3d__plate strong {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.p3d__plate span {
+  color: #b3bccd;
+  font-size: 0.85rem;
+}
+.p3d__tag {
+  position: absolute;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 14px 30px -12px rgba(0, 0, 0, 0.5);
+}
+.p3d__tag--a {
+  left: -8%;
+  top: 22%;
+  transform: translateZ(130px) rotate(-6deg);
+}
+.p3d__tag--b {
+  right: -9%;
+  top: 40%;
+  transform: translateZ(150px) rotate(5deg);
+  background: #4bd69a;
+  color: #062014;
+}
+.p3d__tag--c {
+  left: -4%;
+  top: 62%;
+  transform: translateZ(120px) rotate(3deg);
+  background: var(--bg-raised);
+  color: var(--text);
+  border: 1px solid var(--line-strong);
+}
+.p3d__glare {
+  position: absolute;
+  inset: 0;
+  border-radius: 26px;
+  transform: translateZ(1px);
+  mix-blend-mode: overlay;
+  pointer-events: none;
 }

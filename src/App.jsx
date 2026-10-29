@@ -9,6 +9,7 @@ import Experience from "./components/Experience.jsx";
 import About from "./components/About.jsx";
 import Contact from "./components/Contact.jsx";
 import ProjectModal from "./components/ProjectModal.jsx";
+import HoverBackground from "./components/HoverBackground.jsx";
 
 const ids = new Set(projects.map((p) => p.id));
 const fromHash = () => {
@@ -39,6 +40,7 @@ function Page() {
 
   return (
     <>
+      <HoverBackground />
       <a href="#main" className="skip">
         {t(ui.skip)}
       </a>
