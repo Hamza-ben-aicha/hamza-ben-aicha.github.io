@@ -14,20 +14,7 @@ export const site = {
     "https://drive.google.com/file/d/1VgZFAHFuTO37qTXqythagVriihwSKQZg/view?usp=sharing",
 };
 
-export const cvFiles = [
-  {
-    href: "cv/Hamza_Ben_Aicha_CV_Backend_EN.pdf",
-    label: { en: "Backend CV (English)", fr: "CV Backend (anglais)" },
-  },
-  {
-    href: "cv/Hamza_Ben_Aicha_CV_Flutter_EN.pdf",
-    label: { en: "Flutter / mobile CV (English)", fr: "CV Flutter / mobile (anglais)" },
-  },
-  {
-    href: "cv/Hamza_Ben_Aicha_CV_FR.pdf",
-    label: { en: "CV in French", fr: "CV en français" },
-  },
-];
+export const cvFile = "cv/Hamza_Ben_Aicha_CV.pdf";
 
 export const ui = {
   nav: {

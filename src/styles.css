@@ -381,56 +381,6 @@ section[id] {
   }
 }
 
-/* ───────────────── CV menu ───────────────── */
-.cv-menu {
-  position: relative;
-}
-.cv-menu__list {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  z-index: 60;
-  min-width: 270px;
-  margin: 0;
-  padding: 6px;
-  list-style: none;
-  background: var(--bg-raised);
-  border: 1px solid var(--line-strong);
-  border-radius: 14px;
-  box-shadow: var(--shadow);
-  transform-origin: top right;
-}
-.cv-menu--left .cv-menu__list {
-  left: 0;
-  right: auto;
-  transform-origin: top left;
-}
-.cv-menu--above .cv-menu__list {
-  top: auto;
-  bottom: calc(100% + 8px);
-}
-.cv-menu__list a {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 10px 12px;
-  border-radius: 9px;
-  font-size: 0.95rem;
-  text-decoration: none;
-}
-.cv-menu__list a:hover,
-.cv-menu__list a:focus-visible {
-  background: var(--accent-soft);
-}
-.cv-menu__ext {
-  padding: 1px 6px;
-  border: 1px solid var(--line-strong);
-  border-radius: 5px;
-  color: var(--muted);
-  font-size: 0.72rem;
-}
-
 /* ───────────────── Hero ───────────────── */
 .hero {
   position: relative;

@@ -67,7 +67,7 @@ export default function Hero() {
               {t(ui.hero.ctaWork)}
               <IconArrow />
             </a>
-            <CvMenu variant="ghost" align="left" />
+            <CvMenu variant="ghost" />
           </m.div>
         </div>
 

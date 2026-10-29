@@ -135,7 +135,7 @@ export default function Nav() {
                 </m.a>
               ))}
               <div className="nav__sheet-cv">
-                <CvMenu variant="primary" align="left" />
+                <CvMenu variant="primary" />
               </div>
             </nav>
           </m.div>

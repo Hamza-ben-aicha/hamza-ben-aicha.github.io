@@ -67,7 +67,7 @@ export default function Contact() {
                 </m.span>
               </AnimatePresence>
             </button>
-            <CvMenu variant="ghost" align="left" placement="above" />
+            <CvMenu variant="ghost" />
           </Reveal>
 
           <Reveal delay={0.2} as="ul" className="contact__links">
