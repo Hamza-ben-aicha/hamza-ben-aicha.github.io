@@ -4,6 +4,7 @@ import { ui } from "../content.js";
 import ApiConsole from "./ApiConsole.jsx";
 import CvMenu from "./CvMenu.jsx";
 import { IconArrow } from "./Icons.jsx";
+import HoverBackground from "./HoverBackground.jsx";
 
 const ease = [0.22, 1, 0.36, 1];
 
@@ -40,6 +41,7 @@ export default function Hero() {
 
   return (
     <section className="hero" id="top">
+      <HoverBackground />
       <div className="container hero__inner">
         <div className="hero__copy">
           <m.p className="hero__status" {...rise(0.05)}>

@@ -1,12 +1,11 @@
 import { useEffect, useRef } from "react";
 
-// Full-page 3D floor: an isometric grid of squares behind the content.
+// 3D floor behind the hero: an isometric grid of squares.
 // Squares near the mouse rise up as little blocks and sink back when it moves on.
 const TW = 64; // tile width on screen
 const TH = TW / 2; // tile height (isometric)
 const RADIUS = 3.2; // in tiles
 const MAX_H = 46; // max block height in px
-const PARALLAX = 0.25; // floor moves slower than the page when scrolling
 
 function readColors() {
   const cs = getComputedStyle(document.documentElement);
@@ -35,10 +34,7 @@ export default function HoverBackground() {
     let mouse = null; // {x, y} in viewport px, null when outside
     const heights = new Map(); // "i,j" -> current height
 
-    const origin = () => ({
-      ox: w / 2,
-      oy: -h - ((window.scrollY * PARALLAX) % TH) * 2,
-    });
+    const origin = () => ({ ox: w / 2, oy: -h });
     const toScreen = (i, j, o) => [o.ox + (i - j) * (TW / 2), o.oy + (i + j) * (TH / 2)];
     const toGrid = (x, y, o) => {
       const u = (x - o.ox) / (TW / 2);
@@ -46,10 +42,11 @@ export default function HoverBackground() {
       return [(u + v) / 2, (v - u) / 2];
     };
 
+    const host = canvas.parentElement;
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      w = window.innerWidth;
-      h = window.innerHeight;
+      w = host.clientWidth;
+      h = host.clientHeight;
       canvas.width = Math.round(w * dpr);
       canvas.height = Math.round(h * dpr);
       canvas.style.width = w + "px";
@@ -172,16 +169,13 @@ export default function HoverBackground() {
 
     const onMove = (e) => {
       if (e.pointerType === "touch") return;
-      mouse = { x: e.clientX, y: e.clientY };
+      const r = host.getBoundingClientRect();
+      mouse = { x: e.clientX - r.left, y: e.clientY - r.top };
       kick();
     };
     const onLeave = () => {
       mouse = null;
       kick();
-    };
-    const onScroll = () => {
-      kick();
-      if (!raf) draw();
     };
 
     const themeObs = new MutationObserver(() => {
@@ -190,23 +184,20 @@ export default function HoverBackground() {
     });
     themeObs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
+    const ro = new ResizeObserver(resize);
+    ro.observe(host);
     resize();
-    window.addEventListener("resize", resize);
-    window.addEventListener("scroll", onScroll, { passive: true });
     if (!touchOnly) {
-      window.addEventListener("pointermove", onMove, { passive: true });
-      document.addEventListener("pointerleave", onLeave);
-      document.documentElement.addEventListener("mouseleave", onLeave);
+      host.addEventListener("pointermove", onMove, { passive: true });
+      host.addEventListener("pointerleave", onLeave);
       window.addEventListener("blur", onLeave);
     }
     return () => {
       cancelAnimationFrame(raf);
       themeObs.disconnect();
-      window.removeEventListener("resize", resize);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("pointermove", onMove);
-      document.removeEventListener("pointerleave", onLeave);
-      document.documentElement.removeEventListener("mouseleave", onLeave);
+      ro.disconnect();
+      host.removeEventListener("pointermove", onMove);
+      host.removeEventListener("pointerleave", onLeave);
       window.removeEventListener("blur", onLeave);
     };
   }, []);

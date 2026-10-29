@@ -1622,10 +1622,15 @@ section[id] {
 
 /* ───────────────── Hover background ───────────────── */
 .hover-bg {
-  position: fixed;
+  position: absolute;
   inset: 0;
-  z-index: -1;
+  z-index: 0;
   pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, #000 70%, transparent);
+  mask-image: linear-gradient(to bottom, #000 70%, transparent);
+}
+.hero__inner {
+  z-index: 1;
 }
 
 /* ───────────────── 3D portrait ───────────────── */
