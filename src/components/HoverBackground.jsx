@@ -1,25 +1,23 @@
 import { useEffect, useRef } from "react";
 
-// Full-page dot grid behind the content. Dots near the pointer light up in the
-// accent colour and drift away from it, with a soft glow following the cursor.
-// Static (no animation) on touch screens and when reduced motion is preferred.
-const GAP = 30;
-const RADIUS = 170;
-const PUSH = 9;
+// Full-page 3D floor: an isometric grid of squares behind the content.
+// Squares near the mouse rise up as little blocks and sink back when it moves on.
+const TW = 64; // tile width on screen
+const TH = TW / 2; // tile height (isometric)
+const RADIUS = 3.2; // in tiles
+const MAX_H = 46; // max block height in px
+const PARALLAX = 0.25; // floor moves slower than the page when scrolling
 
 function readColors() {
   const cs = getComputedStyle(document.documentElement);
+  const v = (name, fb) => cs.getPropertyValue(name).trim() || fb;
   return {
-    dot: cs.getPropertyValue("--bg-dot").trim() || "rgba(232,236,243,.08)",
-    accent: cs.getPropertyValue("--accent").trim() || "#f5b83d",
-    glow: cs.getPropertyValue("--bg-glow").trim() || "rgba(245,184,61,.07)",
+    line: v("--floor-line", "rgba(232,236,243,.06)"),
+    top: v("--floor-top", "245,184,61"),
+    left: v("--floor-left", "196,138,28"),
+    right: v("--floor-right", "150,104,18"),
+    edge: v("--floor-edge", "255,214,130"),
   };
-}
-
-function hexToRgb(hex) {
-  const h = hex.replace("#", "");
-  const n = parseInt(h.length === 3 ? h.split("").map((c) => c + c).join("") : h, 16);
-  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 }
 
 export default function HoverBackground() {
@@ -28,23 +26,28 @@ export default function HoverBackground() {
   useEffect(() => {
     const canvas = ref.current;
     const ctx = canvas.getContext("2d");
-    const still =
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
-      window.matchMedia("(hover: none)").matches;
+    const touchOnly = window.matchMedia("(hover: none)").matches;
 
     let w = 0;
     let h = 0;
-    let dpr = 1;
     let colors = readColors();
-    let rgb = hexToRgb(colors.accent);
-    const target = { x: -9999, y: -9999 };
-    const cur = { x: -9999, y: -9999 };
-    let strength = 0; // fades the effect in/out when the pointer enters/leaves
-    let targetStrength = 0;
     let raf = 0;
+    let mouse = null; // {x, y} in viewport px, null when outside
+    const heights = new Map(); // "i,j" -> current height
+
+    const origin = () => ({
+      ox: w / 2,
+      oy: -h - ((window.scrollY * PARALLAX) % TH) * 2,
+    });
+    const toScreen = (i, j, o) => [o.ox + (i - j) * (TW / 2), o.oy + (i + j) * (TH / 2)];
+    const toGrid = (x, y, o) => {
+      const u = (x - o.ox) / (TW / 2);
+      const v = (y - o.oy) / (TH / 2);
+      return [(u + v) / 2, (v - u) / 2];
+    };
 
     const resize = () => {
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       w = window.innerWidth;
       h = window.innerHeight;
       canvas.width = Math.round(w * dpr);
@@ -55,55 +58,113 @@ export default function HoverBackground() {
       draw();
     };
 
-    const draw = () => {
-      ctx.clearRect(0, 0, w, h);
-      // cursor glow
-      if (strength > 0.01) {
-        const g = ctx.createRadialGradient(cur.x, cur.y, 0, cur.x, cur.y, RADIUS * 2.2);
-        g.addColorStop(0, colors.glow);
-        g.addColorStop(1, "rgba(0,0,0,0)");
-        ctx.globalAlpha = strength;
-        ctx.fillStyle = g;
-        ctx.fillRect(cur.x - RADIUS * 2.2, cur.y - RADIUS * 2.2, RADIUS * 4.4, RADIUS * 4.4);
-        ctx.globalAlpha = 1;
+    const drawFloor = (o) => {
+      const corners = [
+        toGrid(0, 0, o),
+        toGrid(w, 0, o),
+        toGrid(0, h + MAX_H, o),
+        toGrid(w, h + MAX_H, o),
+      ];
+      const is = corners.map((c) => c[0]);
+      const js = corners.map((c) => c[1]);
+      const i0 = Math.floor(Math.min(...is)) - 1;
+      const i1 = Math.ceil(Math.max(...is)) + 1;
+      const j0 = Math.floor(Math.min(...js)) - 1;
+      const j1 = Math.ceil(Math.max(...js)) + 1;
+      ctx.strokeStyle = colors.line;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (let i = i0; i <= i1; i++) {
+        const [ax, ay] = toScreen(i, j0, o);
+        const [bx, by] = toScreen(i, j1, o);
+        ctx.moveTo(ax, ay);
+        ctx.lineTo(bx, by);
       }
-      // dots
-      const ox = (w % GAP) / 2;
-      ctx.fillStyle = colors.dot;
-      const lit = [];
-      for (let x = ox; x < w + GAP; x += GAP) {
-        for (let y = GAP / 2; y < h + GAP; y += GAP) {
-          const dx = x - cur.x;
-          const dy = y - cur.y;
-          const d2 = dx * dx + dy * dy;
-          if (strength > 0.01 && d2 < RADIUS * RADIUS) {
-            const d = Math.sqrt(d2) || 1;
-            const f = (1 - d / RADIUS) ** 2 * strength;
-            lit.push([x + (dx / d) * PUSH * f, y + (dy / d) * PUSH * f, f]);
-          } else {
-            ctx.fillRect(x - 0.9, y - 0.9, 1.8, 1.8);
+      for (let j = j0; j <= j1; j++) {
+        const [ax, ay] = toScreen(i0, j, o);
+        const [bx, by] = toScreen(i1, j, o);
+        ctx.moveTo(ax, ay);
+        ctx.lineTo(bx, by);
+      }
+      ctx.stroke();
+    };
+
+    const poly = (pts, fill) => {
+      ctx.beginPath();
+      ctx.moveTo(pts[0][0], pts[0][1]);
+      for (let k = 1; k < pts.length; k++) ctx.lineTo(pts[k][0], pts[k][1]);
+      ctx.closePath();
+      ctx.fillStyle = fill;
+      ctx.fill();
+    };
+
+    const drawBlock = (i, j, z, o) => {
+      const f = Math.min(z / MAX_H, 1);
+      const [ax, ay] = toScreen(i, j, o); // back
+      const [bx, by] = toScreen(i + 1, j, o); // right
+      const [cx, cy] = toScreen(i + 1, j + 1, o); // front
+      const [dx, dy] = toScreen(i, j + 1, o); // left
+      const a = 0.6 + f * 0.4;
+      // left and right side faces
+      poly([[dx, dy - z], [cx, cy - z], [cx, cy], [dx, dy]], `rgba(${colors.left},${a})`);
+      poly([[cx, cy - z], [bx, by - z], [bx, by], [cx, cy]], `rgba(${colors.right},${a})`);
+      // top face
+      poly([[ax, ay - z], [bx, by - z], [cx, cy - z], [dx, dy - z]], `rgba(${colors.top},${0.45 + f * 0.55})`);
+      // highlight on the top edges
+      ctx.strokeStyle = `rgba(${colors.edge},${0.2 + f * 0.6})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(dx, dy - z);
+      ctx.lineTo(ax, ay - z);
+      ctx.lineTo(bx, by - z);
+      ctx.stroke();
+    };
+
+    function draw() {
+      const o = origin();
+      ctx.clearRect(0, 0, w, h);
+      drawFloor(o);
+      // draw blocks back to front so nearer ones cover farther ones
+      const blocks = [];
+      heights.forEach((z, key) => {
+        if (z < 0.4) return;
+        const [i, j] = key.split(",").map(Number);
+        blocks.push([i, j, z]);
+      });
+      blocks.sort((p, q) => p[0] + p[1] - (q[0] + q[1]) || p[0] - q[0]);
+      for (const [i, j, z] of blocks) drawBlock(i, j, z, o);
+    }
+
+    const tick = () => {
+      const o = origin();
+      const targets = new Map();
+      if (mouse) {
+        const [mi, mj] = toGrid(mouse.x, mouse.y, o);
+        const r = Math.ceil(RADIUS) + 1;
+        for (let i = Math.floor(mi) - r; i <= Math.floor(mi) + r; i++) {
+          for (let j = Math.floor(mj) - r; j <= Math.floor(mj) + r; j++) {
+            const d = Math.hypot(i + 0.5 - mi, j + 0.5 - mj);
+            if (d < RADIUS) {
+              // step the heights so the blocks look like stairs rising to the cursor
+              const t = 1 - d / RADIUS;
+              targets.set(`${i},${j}`, Math.round(t * t * 4) * (MAX_H / 4));
+            }
           }
         }
       }
-      for (const [x, y, f] of lit) {
-        ctx.fillStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${0.18 + f * 0.82})`;
-        const r = 1 + f * 1.6;
-        ctx.beginPath();
-        ctx.arc(x, y, r, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    };
-
-    const tick = () => {
-      cur.x += (target.x - cur.x) * 0.18;
-      cur.y += (target.y - cur.y) * 0.18;
-      strength += (targetStrength - strength) * 0.12;
+      let moving = false;
+      targets.forEach((_, key) => {
+        if (!heights.has(key)) heights.set(key, 0);
+      });
+      heights.forEach((z, key) => {
+        const t = targets.get(key) || 0;
+        const nz = z + (t - z) * 0.16;
+        if (Math.abs(t - nz) > 0.3) moving = true;
+        if (t === 0 && nz < 0.3) heights.delete(key);
+        else heights.set(key, Math.abs(t - nz) <= 0.3 ? t : nz);
+      });
       draw();
-      const settled =
-        Math.abs(target.x - cur.x) < 0.3 &&
-        Math.abs(target.y - cur.y) < 0.3 &&
-        Math.abs(targetStrength - strength) < 0.01;
-      raf = settled ? 0 : requestAnimationFrame(tick);
+      raf = moving ? requestAnimationFrame(tick) : 0;
     };
     const kick = () => {
       if (!raf) raf = requestAnimationFrame(tick);
@@ -111,40 +172,41 @@ export default function HoverBackground() {
 
     const onMove = (e) => {
       if (e.pointerType === "touch") return;
-      if (cur.x < -1000) {
-        cur.x = e.clientX;
-        cur.y = e.clientY;
-      }
-      target.x = e.clientX;
-      target.y = e.clientY;
-      targetStrength = 1;
+      mouse = { x: e.clientX, y: e.clientY };
       kick();
     };
     const onLeave = () => {
-      targetStrength = 0;
+      mouse = null;
       kick();
+    };
+    const onScroll = () => {
+      kick();
+      if (!raf) draw();
     };
 
     const themeObs = new MutationObserver(() => {
       colors = readColors();
-      rgb = hexToRgb(colors.accent);
       draw();
     });
     themeObs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
     resize();
     window.addEventListener("resize", resize);
-    if (!still) {
+    window.addEventListener("scroll", onScroll, { passive: true });
+    if (!touchOnly) {
       window.addEventListener("pointermove", onMove, { passive: true });
-      document.documentElement.addEventListener("pointerleave", onLeave);
+      document.addEventListener("pointerleave", onLeave);
+      document.documentElement.addEventListener("mouseleave", onLeave);
       window.addEventListener("blur", onLeave);
     }
     return () => {
       cancelAnimationFrame(raf);
       themeObs.disconnect();
       window.removeEventListener("resize", resize);
+      window.removeEventListener("scroll", onScroll);
       window.removeEventListener("pointermove", onMove);
-      document.documentElement.removeEventListener("pointerleave", onLeave);
+      document.removeEventListener("pointerleave", onLeave);
+      document.documentElement.removeEventListener("mouseleave", onLeave);
       window.removeEventListener("blur", onLeave);
     };
   }, []);

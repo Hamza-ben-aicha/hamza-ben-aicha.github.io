@@ -18,8 +18,11 @@
   --accent-soft: rgba(245, 184, 61, 0.1);
   --ok: #4bd69a;
   --grid-dot: rgba(232, 236, 243, 0.1);
-  --bg-dot: rgba(232, 236, 243, 0.075);
-  --bg-glow: rgba(245, 184, 61, 0.08);
+  --floor-line: rgba(232, 236, 243, 0.06);
+  --floor-top: 245, 184, 61;
+  --floor-left: 196, 138, 28;
+  --floor-right: 140, 98, 16;
+  --floor-edge: 255, 222, 150;
   --overlay: rgba(5, 9, 18, 0.72);
   --shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.6);
 
@@ -56,8 +59,11 @@
   --accent-soft: rgba(245, 184, 61, 0.16);
   --ok: #139c63;
   --grid-dot: rgba(15, 24, 48, 0.13);
-  --bg-dot: rgba(15, 24, 48, 0.1);
-  --bg-glow: rgba(245, 184, 61, 0.14);
+  --floor-line: rgba(15, 24, 48, 0.08);
+  --floor-top: 245, 184, 61;
+  --floor-left: 220, 160, 45;
+  --floor-right: 190, 132, 30;
+  --floor-edge: 255, 236, 190;
   --overlay: rgba(15, 24, 48, 0.45);
   --shadow: 0 30px 80px -40px rgba(15, 24, 48, 0.35);
   color-scheme: light;
