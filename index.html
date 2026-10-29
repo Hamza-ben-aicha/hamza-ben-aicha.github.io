@@ -1,10 +1,52 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>portfolio</title>
+    <title>Hamza Ben Aicha | Backend & Mobile Engineer</title>
+    <meta
+      name="description"
+      content="Hamza Ben Aicha, backend and mobile engineer in Sousse, Tunisia. Production APIs in Node.js, NestJS and Spring Boot, and Flutter apps. Open to remote roles."
+    />
+    <meta name="author" content="Hamza Ben Aicha" />
+    <meta name="theme-color" content="#0E1626" />
+    <link rel="canonical" href="https://hamza-ben-aicha.github.io/" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://hamza-ben-aicha.github.io/" />
+    <meta property="og:title" content="Hamza Ben Aicha | Backend & Mobile Engineer" />
+    <meta
+      property="og:description"
+      content="Production APIs in Node.js, NestJS and Spring Boot, and the Flutter apps that run on them. Case studies, experience and CV."
+    />
+    <meta property="og:image" content="https://hamza-ben-aicha.github.io/og.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://hamza-ben-aicha.github.io/og.jpg" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Hamza Ben Aicha",
+        "jobTitle": "Backend & Mobile Engineer",
+        "url": "https://hamza-ben-aicha.github.io/",
+        "image": "https://hamza-ben-aicha.github.io/me.webp",
+        "email": "mailto:hamza.ben.aicha@outlook.com",
+        "address": { "@type": "PostalAddress", "addressLocality": "Sousse", "addressCountry": "TN" },
+        "sameAs": ["https://www.linkedin.com/in/Hamza-Ben-Aicha", "https://github.com/Hamza-ben-aicha"]
+      }
+    </script>
+    <script>
+      // Apply the saved theme before first paint to avoid a flash.
+      try {
+        var t = localStorage.getItem("hba-theme");
+        if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>
